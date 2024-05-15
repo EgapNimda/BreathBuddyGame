@@ -23,6 +23,7 @@ import BossTutorialPhase1 from 'scene/boss/bossTutorial/BossTutorialPhase1'
 import BossTutorialPhase2 from 'scene/boss/bossTutorial/BossTutorialPhase2'
 import BossCutSceneEscape from 'scene/boss/bossCutScene/BossCutSceneEscape'
 import BossCutSceneEscape2 from 'scene/boss/bossCutScene/BossCutSceneEscape2'
+import SettingScene from 'scene/SettingScene'
 
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
@@ -44,28 +45,7 @@ const config: Phaser.Types.Core.GameConfig = {
 		createContainer: true,
 	},
 	scene: [
-		TitleScene,
-		LoginScene,
-		OtpScene,
-		RegisterScene,
-		DifficultyScene,
-		AirflowScene,
-		SetupScene,
-		GameScene,
-		EndGameScene,
-		TutorialCharacterScene,
-		TutorialHudScene,
-		TutorialControllerScene,
-		WarmupGaugeScene,
-		WarmupScene,
-		BossScene,
-		BossItemTutorial,
-		BossTutorialPhase1,
-		BossTutorialPhase2,
-		BossCutSceneVS,
-		BossCutSceneEscape,
-		BossCutSceneEscape2,
-		PauseScene,
+		SettingScene
 	],
 }
 
