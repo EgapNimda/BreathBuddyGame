@@ -21,7 +21,8 @@ export default class SettingScene extends Phaser.Scene {
 
     private characterBox: Phaser.GameObjects.Graphics | undefined
 
-    private useButton : Phaser.GameObjects.Graphics | undefined
+    private usingButton : Phaser.GameObjects.Graphics | undefined
+    private useButton : Phaser.GameObjects.NineSlice | undefined
     private useText : Phaser.GameObjects.Text | undefined
 
     // Airflow Box
@@ -105,16 +106,20 @@ export default class SettingScene extends Phaser.Scene {
             .setOrigin(0.5)
 
 
-        // Using, Use Button
-        this.useButton = this.add.graphics()
-        this.useButton.fillStyle(0xFFB996)
-        this.useButton.fillRoundedRect( width/2 - 168, 640, 336, 80, 14 )
-        this.useButton.lineStyle(3, 0xD35E24)
-        this.useButton.strokeRoundedRect( width/2 - 168, 640, 336, 80, 14 )
+        // Using Button
+        this.usingButton = this.add.graphics()
+        this.usingButton.fillStyle(0xFFB996)
+        this.usingButton.fillRoundedRect( width/2 - 168, 640, 336, 80, 14 )
+        this.usingButton.lineStyle(3, 0xD35E24)
+        this.usingButton.strokeRoundedRect( width/2 - 168, 640, 336, 80, 14 )
+
+        // Use Button
+        this.useButton = this.add.nineslice( width/2 - 168, 640, "sheet", "button_hard.png", 336, 80 ).setOrigin(0,0)
 
         // set Button
-        this.useButton.setInteractive( new Phaser.Geom.Rectangle(width/2 - 168, 640, 336, 80,), Phaser.Geom.Rectangle.Contains )
-            .on('pointerdown', () => this.useChar())
+        /*this.usingButton.setInteractive( new Phaser.Geom.Rectangle(width/2 - 168, 640, 336, 80,), Phaser.Geom.Rectangle.Contains )
+            .on('pointerdown', () => this.useChar())*/
+        this.useButton.setInteractive().on('pointerdown', () => this.useChar())
         this.useText = this.add.text(width/2, 680, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
             .setFontSize(MEDIUM_FONT_SIZE)
             .setStroke("#9E461B",3)
@@ -219,21 +224,20 @@ export default class SettingScene extends Phaser.Scene {
             this.characterBox?.fillRoundedRect( width/2 -168, 504, 336, 120, 14 )
 
             // Set Use Button
-            this.useButton?.setVisible(true)
             this.useText?.setVisible(true)
-            this.useButton?.setInteractive( new Phaser.Geom.Rectangle(width/2 - 168, 640, 336, 80,), Phaser.Geom.Rectangle.Contains )
                 .on('pointerdown', () => this.useChar())
-            if (this.showingCharIndex === this.usingCharIndex) {
-                this.useButton?.fillStyle(0xFFB996)
+            if (this.showingCharIndex === this.usingCharIndex) { // Currently Using Character
+                this.usingButton?.setVisible(true)
+                this.useButton?.setVisible(false)
                 this.useText?.setText("ใช้อยู่")
-                this.useButton?.fillRoundedRect( width/2 - 168, 640, 336, 80, 14)
             }
-            else {
-            this.useButton?.fillStyle(0x9E461B)
-            this.useText?.setText("ใช้")
-            this.useButton?.fillRoundedRect( width/2 - 168, 640, 336, 80, 14)
+            else { // Other Characters
+                this.usingButton?.setVisible(false)
+                this.useButton?.setVisible(true)
+                this.useButton?.setInteractive().on('pointerdown', () => this.useChar())
+                this.useText?.setText("ใช้")
 
-        }
+            }
         }
         else { // Locked Character
             // Character Text (Name)
@@ -249,8 +253,9 @@ export default class SettingScene extends Phaser.Scene {
 
             // Set Use Button
             this.useButton?.setInteractive().off('pointerdown')
-            this.useButton?.setVisible(false)
+            this.usingButton?.setVisible(false)
             this.useText?.setVisible(false)
+            this.useButton?.setVisible(false)
         }
         
 
