@@ -10,7 +10,7 @@ export default class SettingScene extends Phaser.Scene {
     // Characters
     private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
     private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]
-    private unlockedCharacters = [0,1] // from database
+    private unlockedCharacters = [0] // from database
 
     private showingCharIndex = 0
     private showingChar= this.charactersFrames[this.showingCharIndex]
@@ -43,6 +43,10 @@ export default class SettingScene extends Phaser.Scene {
     private mediumText : Phaser.GameObjects.Text | undefined
     private hardText : Phaser.GameObjects.Text | undefined
 
+    // from database
+    private username : string | undefined
+    private airflow : number | undefined
+
     constructor() {
         super('setting')
     }
@@ -63,6 +67,9 @@ export default class SettingScene extends Phaser.Scene {
 
     create(){
         const { width, height } = this.scale
+
+        this.username = "น้องออนิว" // change later
+        this.airflow = 100 // change later
         
         this.add.tileSprite(0,0,width,height,'bg').setOrigin(0).setScrollFactor(0,0)
   
@@ -82,7 +89,14 @@ export default class SettingScene extends Phaser.Scene {
         this.usernameBox.fillRoundedRect( width/2 - 168, 320, 336, 56, 14 )
         this.usernameBox.lineStyle(1, 0x727272)
         this.usernameBox.strokeRoundedRect( width/2 - 168, 320, 336, 56, 14 )
+        // Edit Icon
         this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png").setOrigin(1,0.5) // Guessed the coordinate
+
+        // Username Text
+        this.add.text(width/2, 320+28,this.username)
+            .setColor("#57453B")
+            .setFontSize(32)
+            .setOrigin(0.5,0.5)
 
         // Character Select Box
         //this.characterBox = this.add.rectangle( width/2, 504, 336, 120, 0x43A99E ).setOrigin(0.5,0) 
@@ -117,8 +131,6 @@ export default class SettingScene extends Phaser.Scene {
         this.useButton = this.add.nineslice( width/2 - 168, 640, "sheet", "button_hard.png", 336, 80 ).setOrigin(0,0)
 
         // set Button
-        /*this.usingButton.setInteractive( new Phaser.Geom.Rectangle(width/2 - 168, 640, 336, 80,), Phaser.Geom.Rectangle.Contains )
-            .on('pointerdown', () => this.useChar())*/
         this.useButton.setInteractive().on('pointerdown', () => this.useChar())
         this.useText = this.add.text(width/2, 680, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
             .setFontSize(MEDIUM_FONT_SIZE)
@@ -154,6 +166,12 @@ export default class SettingScene extends Phaser.Scene {
         this.airflowBox.lineStyle(1, 0x727272)
         this.airflowBox.strokeRoundedRect( width/2 - 164, 920, 328, 56 )
         this.add.image(width/2 + 164 - 20, 920 + 28, "sheet", "logo_setting_edit airflow.png").setOrigin(1,0.5) // Guessed the coordinate
+
+        // Airflow Number
+        this.add.text(width/2, 920 + 28, this.airflow.toString())
+            .setFontSize(32)
+            .setColor("#57453B")
+            .setOrigin(0.5,0.5)
 
         // Difficulty
         // TODO Add Difficulty Logo
