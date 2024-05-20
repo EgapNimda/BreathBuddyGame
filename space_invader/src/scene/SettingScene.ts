@@ -6,11 +6,12 @@ import WebFont from 'webfontloader'
 export default class SettingScene extends Phaser.Scene {
     // Username Box
     private usernameBox : Phaser.GameObjects.Graphics | undefined
+    private editNameForm : Phaser.GameObjects.DOMElement | undefined
 
     // Characters
     private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
     private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]
-    private unlockedCharacters = [0] // from database
+    private unlockedCharacters = [0, 1, 2] // from database
 
     private showingCharIndex = 0
     private showingChar= this.charactersFrames[this.showingCharIndex]
@@ -63,11 +64,13 @@ export default class SettingScene extends Phaser.Scene {
         this.load.svg('cliniflo', 'assets/setting/logo_modal_cliniflo.svg')
         this.load.svg('editAirflow', 'assets/setting/logo_modal_edit airflow.svg')
         this.load.svg('editName', 'assets/setting/logo_modal_edit name.svg')
+
+        this.load.html('editnameForm', 'html/setting/editname.html')
+        this.load.html('editairflowForm', 'html/setting/editairflow.html')
     }
 
     create(){
         const { width, height } = this.scale
-
         this.username = "น้องออนิว" // change later
         this.airflow = 100 // change later
         
@@ -89,8 +92,19 @@ export default class SettingScene extends Phaser.Scene {
         this.usernameBox.fillRoundedRect( width/2 - 168, 320, 336, 56, 14 )
         this.usernameBox.lineStyle(1, 0x727272)
         this.usernameBox.strokeRoundedRect( width/2 - 168, 320, 336, 56, 14 )
-        // Edit Icon
-        this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png").setOrigin(1,0.5) // Guessed the coordinate
+        
+        
+
+        // Edit Name Icon
+        this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
+            .setInteractive().on('pointerdown', () => this.popUpEditName())
+            .setOrigin(1,0.5) // Guessed the coordinate
+        // Pop Up Form
+        this.editNameForm = this.add.dom( width/2 - 168, 320 ).createFromCache('editnameForm')
+        let element = this.editNameForm
+        element.addListener('click');
+
+        this.editNameForm.setVisible(false)
 
         // Username Text
         this.add.text(width/2, 320+28,this.username)
@@ -225,7 +239,6 @@ export default class SettingScene extends Phaser.Scene {
     update() {
         const { width,height } = this.scale
         console.log(this.usingCharIndex)
-        
 
         // Set Showing Character
         if (this.unlockedCharacters.includes(this.showingCharIndex)) { // Unlocked Character
@@ -319,10 +332,13 @@ export default class SettingScene extends Phaser.Scene {
 
     useChar(){
         this.usingCharIndex = this.showingCharIndex
-    
     }
 
     changeDifficulty(x : number) {
         this.difficulty = x
+    }
+
+    popUpEditName() {
+        this.editNameForm?.setVisible(true)
     }
 }
