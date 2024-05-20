@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { MARGIN, MEDIUM_FONT_SIZE, LARGE_FONT_SIZE } from 'config';
+import { MARGIN } from 'config';
 // TODO Import Webfontloader
 import WebFont from 'webfontloader'
 
@@ -12,10 +12,8 @@ export default class SettingScene extends Phaser.Scene {
     private usernameText : Phaser.GameObjects.Text | undefined
 
     // Characters
-    /*private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
-    private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]*/
     private unlockedCharacters = [0, 1, 2] // from database
-    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png", "unlocked" : true},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png", "unlocked" : true},"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png", "unlocked" : true}}'
+    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png", "unlocked" : true},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png", "unlocked" : false },"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png", "unlocked" : true}}'
     private characters = JSON.parse(this.charactersJSON)
     private charactersCount : number = Object.keys(this.characters).length
 
@@ -288,7 +286,7 @@ export default class SettingScene extends Phaser.Scene {
         const { width,height } = this.scale
 
         // Set Showing Character
-        if (this.unlockedCharacters.includes(this.showingCharIndex)) { // Unlocked Character
+        if (this.characters[this.showingCharIndex]["unlocked"]) { // Unlocked Character
             // Character Text (Name)
             this.showingCharText?.setText(this.characters[this.showingCharIndex]['name'])
                 .setStroke("#D35E24", 12)
