@@ -14,8 +14,8 @@ export default class SettingScene extends Phaser.Scene {
     // Characters
     /*private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
     private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]*/
-    private unlockedCharacters = [0, 2] // from database
-    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png"},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png"},"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png"}}'
+    private unlockedCharacters = [0, 1, 2] // from database
+    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png", "unlocked" : true},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png", "unlocked" : true},"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png", "unlocked" : true}}'
     private characters = JSON.parse(this.charactersJSON)
     private charactersCount : number = Object.keys(this.characters).length
 
@@ -31,7 +31,6 @@ export default class SettingScene extends Phaser.Scene {
     private usingButton : Phaser.GameObjects.Graphics | undefined
     private useButton : Phaser.GameObjects.NineSlice | undefined
     private useText : Phaser.GameObjects.Text | undefined
-    private showUseButton : boolean | undefined
 
     private airflowText: Phaser.GameObjects.Text | undefined
     private medicalAdviceText : Phaser.GameObjects.Text | undefined
@@ -162,7 +161,7 @@ export default class SettingScene extends Phaser.Scene {
 
         // set Button
         this.useButton.setInteractive().on('pointerdown', () => this.useChar())
-        this.useText = this.add.text(width/2, 680, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
+        this.useText = this.add.text(width/2, 680 -3, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
             .setFontSize(32)
             .setPadding(0,20,0,10)
             .setStroke("#9E461B",6)
@@ -281,6 +280,7 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     update() {
+        
     }
     
     charShift(i : number) : void {
