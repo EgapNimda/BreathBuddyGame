@@ -9,11 +9,12 @@ export default class SettingScene extends Phaser.Scene {
     // Username Box
     private usernameBox : Phaser.GameObjects.Graphics | undefined
     private editNameForm : Phaser.GameObjects.DOMElement | undefined
+    private usernameText : Phaser.GameObjects.Text | undefined
 
     // Characters
     /*private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
     private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]*/
-    private unlockedCharacters = [0, 1] // from database
+    private unlockedCharacters = [0, 2] // from database
     private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png"},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png"},"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png"}}'
     private characters = JSON.parse(this.charactersJSON)
     private charactersCount : number = Object.keys(this.characters).length
@@ -82,7 +83,7 @@ export default class SettingScene extends Phaser.Scene {
 
     create(){
         const { width, height } = this.scale
-        this.username = "น้องออนิว" // change later
+        this.username = "น้องราคูนี่" // change later
         this.airflow = 100 // change later
         
         this.add.tileSprite(0,0,width,height,'bg').setOrigin(0).setScrollFactor(0,0)
@@ -91,11 +92,12 @@ export default class SettingScene extends Phaser.Scene {
         // Headings
         this.add.image( width/2 , MARGIN, 'sheet', "logo_heading_setting.png" ).setOrigin(0.5,0)
         this.add.image( width/2, 169, 'sheet', 'heading_setting.png' ).setOrigin(0.5,0)
-        this.headingText = this.add.text( width/2, 170, 'ตั้งค่าเกม' )
+        this.headingText = this.add.text( width/2, 190 -20, 'ตั้งค่าเกม' )
             .setFontSize(42)
             .setColor("#FFFFFF")
-            .setStroke("#9E461B", 3)
+            .setStroke("#9E461B", 6)
             .setPadding(0,20,0,10)
+            //.setLineSpacing(200)
             .setOrigin(0.5,0)
 
         // Username Box
@@ -119,8 +121,9 @@ export default class SettingScene extends Phaser.Scene {
         this.editNameForm.setVisible(false)
 
         // Username Text
-        this.add.text(width/2, 320+28,this.username)
+        this.usernameText = this.add.text(width/2, 320+28 ,this.username)
             .setColor("#57453B")
+            .setPadding(0,20,0,10)
             .setFontSize(32)
             .setOrigin(0.5,0.5)
 
@@ -162,10 +165,12 @@ export default class SettingScene extends Phaser.Scene {
         this.useText = this.add.text(width/2, 680, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
             .setFontSize(32)
             .setPadding(0,20,0,10)
-            .setStroke("#9E461B",3)
+            .setStroke("#9E461B",6)
             .setColor("#FFFFFF")
             .setOrigin(0.5,0.5)
-        
+
+        // Initiate First Character
+        this.charShift(0)
 
         // Airflow and Difficulty Box
         // this.add.rectangle( width/2, height - 512, 576, 448, 0xFFF6E5 ).setOrigin(0.5,0)
@@ -252,6 +257,12 @@ export default class SettingScene extends Phaser.Scene {
             .setFontSize(28)
             .setOrigin(0.5,0.5)
 
+        // Initiate Difficulty
+        this.changeDifficulty(this.difficulty)
+
+        // Black Screen When Pop Up
+        this.add.rectangle(0, 0, width, height, 0, 0.5).setOrigin(0, 0).setVisible(false)
+
         // Set font for all texts
         const self = this
         WebFont.load({
@@ -270,6 +281,10 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     update() {
+    }
+    
+    charShift(i : number) : void {
+        this.showingCharIndex = (this.showingCharIndex + i + this.charactersCount ) % this.charactersCount // prevent negative number
         const { width,height } = this.scale
 
         // Set Showing Character
@@ -291,20 +306,20 @@ export default class SettingScene extends Phaser.Scene {
             if (this.showingCharIndex === this.usingCharIndex) { // Currently Using Character
                 this.usingButton?.setVisible(true)
                 this.useButton?.setVisible(false)
-                this.useText?.setText("ใช้อยู่")
+                this.useText?.setText("ใช้อยู่").setStroke('#D35E24', 6)
             }
             else { // Other Characters
                 this.usingButton?.setVisible(false)
                 this.useButton?.setVisible(true)
                 this.useButton?.setInteractive().on('pointerdown', () => this.useChar())
-                this.useText?.setText("ใช้")
+                this.useText?.setText("ใช้").setStroke('#9E461B', 6)
 
             }
         }
         else { // Locked Character
             // Character Text (Name)
             this.showingCharText?.setText("ยังไม่ปลดล็อค")
-                .setStroke("#58595B", 6)
+                .setStroke("#58595B", 12)
                 .setFontSize(32)
             // Character Img
             this.showingCharImg?.setTexture("sheet", this.characters[this.showingCharIndex]['frame']).setTintFill(0x000000)
@@ -318,9 +333,18 @@ export default class SettingScene extends Phaser.Scene {
             this.useText?.setVisible(false)
             this.useButton?.setVisible(false)
         }
-        
+    
+    }
 
+    useChar() : void {
+        this.usingCharIndex = this.showingCharIndex
+        this.usingButton?.setVisible(true)
+        this.useButton?.setVisible(false)
+        this.useText?.setText("ใช้อยู่").setStroke('#D35E24', 6)
+    }
 
+    changeDifficulty(difficulty : number) : void {
+        this.difficulty = difficulty
         // Set Difficulty
         if (this.difficulty === 0) { // Easy
             // Set Button
@@ -329,7 +353,7 @@ export default class SettingScene extends Phaser.Scene {
             this.disableHardButton?.setVisible(true)
 
             // Set Text
-            this.easyText?.setStroke("#327F76", 3)
+            this.easyText?.setStroke("#327F76", 6)
             this.mediumText?.setStroke("#BF7F03", 0)
             this.hardText?.setStroke("#9E461B", 0)
         }
@@ -340,7 +364,7 @@ export default class SettingScene extends Phaser.Scene {
 
             // Set Text
             this.easyText?.setStroke("#327F76", 0)
-            this.mediumText?.setStroke("#BF7F03", 3)
+            this.mediumText?.setStroke("#BF7F03", 6)
             this.hardText?.setStroke("#9E461B", 0)
         }
         if (this.difficulty === 2) { // Hard
@@ -351,21 +375,8 @@ export default class SettingScene extends Phaser.Scene {
             // Set Text
             this.easyText?.setStroke("#327F76", 0)
             this.mediumText?.setStroke("#BF7F03", 0)
-            this.hardText?.setStroke("#9E461B", 3)
+            this.hardText?.setStroke("#9E461B", 6)
         }
-    }
-    
-    charShift(i : number) : void {
-        this.showingCharIndex = (this.showingCharIndex + i + this.charactersCount ) % this.charactersCount // prevent negative number
-    
-    }
-
-    useChar() : void {
-        this.usingCharIndex = this.showingCharIndex
-    }
-
-    changeDifficulty(x : number) : void {
-        this.difficulty = x
     }
 
     popUpEditName() : void {
@@ -373,6 +384,8 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     setAllText(style : any) : void {
+        this.usernameText?.setStyle(style)
+
         this.showingCharText?.setStyle(style)
         this.useText?.setStyle(style)
 
