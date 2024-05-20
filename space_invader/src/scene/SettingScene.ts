@@ -4,6 +4,8 @@ import { MARGIN, MEDIUM_FONT_SIZE, LARGE_FONT_SIZE } from 'config';
 import WebFont from 'webfontloader'
 
 export default class SettingScene extends Phaser.Scene {
+    // Heading
+    private headingText : Phaser.GameObjects.Text | undefined
     // Username Box
     private usernameBox : Phaser.GameObjects.Graphics | undefined
     private editNameForm : Phaser.GameObjects.DOMElement | undefined
@@ -17,7 +19,7 @@ export default class SettingScene extends Phaser.Scene {
     private charactersCount : number = Object.keys(this.characters).length
 
     private showingCharIndex = 0
-    private showingChar= this.characters[this.showingCharIndex]['frame']
+    // private showingChar= this.characters[this.showingCharIndex]['frame']
     private showingCharImg : Phaser.GameObjects.Image | undefined
     private showingCharText : Phaser.GameObjects.Text | undefined
 
@@ -30,11 +32,16 @@ export default class SettingScene extends Phaser.Scene {
     private useText : Phaser.GameObjects.Text | undefined
     private showUseButton : boolean | undefined
 
+    private airflowText: Phaser.GameObjects.Text | undefined
+    private medicalAdviceText : Phaser.GameObjects.Text | undefined
+
     // Airflow Box
     private airflowBox : Phaser.GameObjects.Graphics | undefined
 
     //Difficulty
     private difficulty = 0 // from database
+
+    private difficultyText : Phaser.GameObjects.Text | undefined
 
     private easyButton : Phaser.GameObjects.NineSlice | undefined
     private mediumButton : Phaser.GameObjects.NineSlice | undefined
@@ -84,10 +91,11 @@ export default class SettingScene extends Phaser.Scene {
         // Headings
         this.add.image( width/2 , MARGIN, 'sheet', "logo_heading_setting.png" ).setOrigin(0.5,0)
         this.add.image( width/2, 169, 'sheet', 'heading_setting.png' ).setOrigin(0.5,0)
-        this.add.text( width/2, 190, 'ตั้งค่าเกม' )
+        this.headingText = this.add.text( width/2, 170, 'ตั้งค่าเกม' )
             .setFontSize(42)
             .setColor("#FFFFFF")
             .setStroke("#9E461B", 3)
+            .setPadding(0,20,0,10)
             .setOrigin(0.5,0)
 
         // Username Box
@@ -131,10 +139,11 @@ export default class SettingScene extends Phaser.Scene {
         // Showing Character
         this.showingCharImg = this.add.image( width/2, 504, 'sheet', this.characters[this.showingCharIndex]['frame']).setOrigin(0.5,0.5)
         // Character Text (Name)
-        this.showingCharText = this.add.text( width/2, 604 , this.characters[this.showingCharIndex]['name'])
+        this.showingCharText = this.add.text( width/2, 594 , this.characters[this.showingCharIndex]['name'])
             .setColor("#FFFFFF")
-            .setStroke("#9E461B", 6)
+            .setStroke("#D35E24", 12)
             .setFontSize(32)
+            .setPadding(0,20,0,10)
             .setOrigin(0.5)
 
 
@@ -151,7 +160,8 @@ export default class SettingScene extends Phaser.Scene {
         // set Button
         this.useButton.setInteractive().on('pointerdown', () => this.useChar())
         this.useText = this.add.text(width/2, 680, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
-            .setFontSize(MEDIUM_FONT_SIZE)
+            .setFontSize(32)
+            .setPadding(0,20,0,10)
             .setStroke("#9E461B",3)
             .setColor("#FFFFFF")
             .setOrigin(0.5,0.5)
@@ -167,12 +177,15 @@ export default class SettingScene extends Phaser.Scene {
 
         // Airflow Text
         this.add.image(216, 816, 'sheet', 'logo_setting_airflow.png').setOrigin(0,0) // Icon
-        this.add.text( 216 + 59 + 13, 816, "ปริมาณอากาศ" )
-            .setFontSize(MEDIUM_FONT_SIZE)
+        this.airflowText = this.add.text( 216 + 59 + 13, 816 -13, "ปริมาณอากาศ" )
+            .setFontSize(32)
+            .setPadding(0,20,0,10)
             .setColor("#57453B") 
             .setOrigin(0,0)
 
-        this.add.text( width/2, 872, "*ปรับตามคำแนะนำของแพทย์เท่านั้น*" )
+        this.medicalAdviceText = this.add.text( width/2, 872 - 20, "*ปรับตามคำแนะนำของแพทย์เท่านั้น*" )
+            .setFontSize(28)
+            .setPadding(0,20,0,10)
             .setColor("#D35E24")
             .setOrigin(0.5,0)
 
@@ -192,17 +205,17 @@ export default class SettingScene extends Phaser.Scene {
             .setOrigin(0.5,0.5)
 
         // Difficulty
-        // TODO Add Difficulty Logo
         this.add.image( 216, 1024, 'sheet', 'logo_setting_difficulty.png').setOrigin(0,0)
-        this.add.text( 216+59+13, 1024, "ระดับความยาก")
-            .setFont( MEDIUM_FONT_SIZE )
+        this.difficultyText = this.add.text( 216+59+13, 1024 - 13, "ระดับความยาก")
+            .setPadding(0,20,0,10)
+            .setFontSize( 32 )
             .setColor("#57453B") 
             .setOrigin(0,0)
 
         // Difficulty Boxes
-        this.easyButton = this.add.nineslice(width/2 - 96, 1088, 'sheet', 'button_easy.png',144,80).setOrigin(1,0)
+        this.easyButton = this.add.nineslice(width/2 - 96, 1088, 'sheet', 'button_medium.png',144,80).setOrigin(1,0)
         this.mediumButton = this.add.nineslice(width/2, 1088, 'sheet', 'button_medium.png',144,80).setOrigin(0.5,0)
-        this.hardButton = this.add.nineslice(width/2 + 96, 1088, 'sheet', 'button_hard.png',144,80).setOrigin(0,0)
+        this.hardButton = this.add.nineslice(width/2 + 96, 1088, 'sheet', 'button_medium.png',144,80).setOrigin(0,0)
         
         // Gray boxes
         // Easy
@@ -243,13 +256,15 @@ export default class SettingScene extends Phaser.Scene {
         const self = this
         WebFont.load({
             google: {
-              families: ['Mali']
+              families: ['Mali:Bold 700']
             },
             active: function() {
               const menuUiStyle = {
-                fontFamily: 'Mali-bold'
+                fontFamily: 'Mali'
               }
-              self.showingCharText?.setStyle(menuUiStyle)
+              self.setAllText(menuUiStyle)
+              /*self.showingCharText?.setStyle(menuUiStyle)
+              self.useText?.setStyle(menuUiStyle)*/
             }
           });
     }
@@ -261,12 +276,11 @@ export default class SettingScene extends Phaser.Scene {
         if (this.unlockedCharacters.includes(this.showingCharIndex)) { // Unlocked Character
             // Character Text (Name)
             this.showingCharText?.setText(this.characters[this.showingCharIndex]['name'])
-                .setStroke("#9E461B", 6)
+                .setStroke("#D35E24", 12)
                 .setFontSize(32)
 
             // Character Img
-            this.showingChar = this.characters[this.showingCharIndex]['frame']
-            this.showingCharImg?.setTexture("sheet", this.showingChar).clearTint()
+            this.showingCharImg?.setTexture("sheet", this.characters[this.showingCharIndex]['frame']).clearTint()
             // Character Box
             this.characterBox?.fillStyle(0x43A99E) // Green Box
             this.characterBox?.fillRoundedRect( width/2 -168, 504, 336, 120, 14 )
@@ -293,8 +307,7 @@ export default class SettingScene extends Phaser.Scene {
                 .setStroke("#58595B", 6)
                 .setFontSize(32)
             // Character Img
-            this.showingChar = this.characters[this.showingCharIndex]['frame']
-            this.showingCharImg?.setTexture("sheet", this.showingChar).setTintFill(0x000000)
+            this.showingCharImg?.setTexture("sheet", this.characters[this.showingCharIndex]['frame']).setTintFill(0x000000)
             // Character Box
             this.characterBox?.fillStyle(0xACACAC) // Gray Box 
             this.characterBox?.fillRoundedRect( width/2 -168, 504, 336, 120, 14 )
@@ -342,20 +355,34 @@ export default class SettingScene extends Phaser.Scene {
         }
     }
     
-    charShift(i : number){
+    charShift(i : number) : void {
         this.showingCharIndex = (this.showingCharIndex + i + this.charactersCount ) % this.charactersCount // prevent negative number
     
     }
 
-    useChar(){
+    useChar() : void {
         this.usingCharIndex = this.showingCharIndex
     }
 
-    changeDifficulty(x : number) {
+    changeDifficulty(x : number) : void {
         this.difficulty = x
     }
 
-    popUpEditName() {
+    popUpEditName() : void {
         this.editNameForm?.setVisible(true)
+    }
+
+    setAllText(style : any) : void {
+        this.showingCharText?.setStyle(style)
+        this.useText?.setStyle(style)
+
+        this.easyText?.setStyle(style)
+        this.mediumText?.setStyle(style)
+        this.hardText?.setStyle(style)
+        this.headingText?.setStyle(style)
+
+        this.airflowText?.setStyle(style)
+        this.medicalAdviceText?.setStyle(style)
+        this.difficultyText?.setStyle(style)
     }
 }
