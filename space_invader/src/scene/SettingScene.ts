@@ -9,12 +9,15 @@ export default class SettingScene extends Phaser.Scene {
     private editNameForm : Phaser.GameObjects.DOMElement | undefined
 
     // Characters
-    private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
-    private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]
-    private unlockedCharacters = [0, 1, 2] // from database
+    /*private charactersFrames = ["logo_setting_mc1.png", "logo_setting_mc2.png", "logo_setting_mc3.png"]
+    private characterNames = ["นักผจญภัย","นักเวทย์","จอมโจร"]*/
+    private unlockedCharacters = [0, 1] // from database
+    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png"},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png"},"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png"}}'
+    private characters = JSON.parse(this.charactersJSON)
+    private charactersCount : number = Object.keys(this.characters).length
 
     private showingCharIndex = 0
-    private showingChar= this.charactersFrames[this.showingCharIndex]
+    private showingChar= this.characters[this.showingCharIndex]['frame']
     private showingCharImg : Phaser.GameObjects.Image | undefined
     private showingCharText : Phaser.GameObjects.Text | undefined
 
@@ -25,6 +28,7 @@ export default class SettingScene extends Phaser.Scene {
     private usingButton : Phaser.GameObjects.Graphics | undefined
     private useButton : Phaser.GameObjects.NineSlice | undefined
     private useText : Phaser.GameObjects.Text | undefined
+    private showUseButton : boolean | undefined
 
     // Airflow Box
     private airflowBox : Phaser.GameObjects.Graphics | undefined
@@ -100,7 +104,7 @@ export default class SettingScene extends Phaser.Scene {
             .setInteractive().on('pointerdown', () => this.popUpEditName())
             .setOrigin(1,0.5) // Guessed the coordinate
         // Pop Up Form
-        this.editNameForm = this.add.dom( width/2 - 168, 320 ).createFromCache('editnameForm')
+        this.editNameForm = this.add.dom( width/2, 345 + 295 ).createFromCache('editnameForm')
         let element = this.editNameForm
         element.addListener('click');
 
@@ -125,9 +129,9 @@ export default class SettingScene extends Phaser.Scene {
         prevButton.setInteractive().on('pointerdown', () => this.charShift(-1)) // Make the functional button larger than arrow sprite
         nextButton.setInteractive().on('pointerdown', () => this.charShift(1))
         // Showing Character
-        this.showingCharImg = this.add.image( width/2, 504, 'sheet', this.charactersFrames[this.showingCharIndex]).setOrigin(0.5,0.5)
+        this.showingCharImg = this.add.image( width/2, 504, 'sheet', this.characters[this.showingCharIndex]['frame']).setOrigin(0.5,0.5)
         // Character Text (Name)
-        this.showingCharText = this.add.text( width/2, 604 , this.characterNames[this.showingCharIndex])
+        this.showingCharText = this.add.text( width/2, 604 , this.characters[this.showingCharIndex]['name'])
             .setColor("#FFFFFF")
             .setStroke("#9E461B", 6)
             .setFontSize(32)
@@ -234,21 +238,34 @@ export default class SettingScene extends Phaser.Scene {
         this.hardText = this.add.text( width/2 + 168, 1088 + 40, "ยาก")
             .setFontSize(28)
             .setOrigin(0.5,0.5)
+
+        // Set font for all texts
+        const self = this
+        WebFont.load({
+            google: {
+              families: ['Mali']
+            },
+            active: function() {
+              const menuUiStyle = {
+                fontFamily: 'Mali-bold'
+              }
+              self.showingCharText?.setStyle(menuUiStyle)
+            }
+          });
     }
 
     update() {
         const { width,height } = this.scale
-        console.log(this.usingCharIndex)
 
         // Set Showing Character
         if (this.unlockedCharacters.includes(this.showingCharIndex)) { // Unlocked Character
             // Character Text (Name)
-            this.showingCharText?.setText(this.characterNames[this.showingCharIndex])
+            this.showingCharText?.setText(this.characters[this.showingCharIndex]['name'])
                 .setStroke("#9E461B", 6)
                 .setFontSize(32)
 
             // Character Img
-            this.showingChar = this.charactersFrames[this.showingCharIndex]
+            this.showingChar = this.characters[this.showingCharIndex]['frame']
             this.showingCharImg?.setTexture("sheet", this.showingChar).clearTint()
             // Character Box
             this.characterBox?.fillStyle(0x43A99E) // Green Box
@@ -276,7 +293,7 @@ export default class SettingScene extends Phaser.Scene {
                 .setStroke("#58595B", 6)
                 .setFontSize(32)
             // Character Img
-            this.showingChar = this.charactersFrames[this.showingCharIndex]
+            this.showingChar = this.characters[this.showingCharIndex]['frame']
             this.showingCharImg?.setTexture("sheet", this.showingChar).setTintFill(0x000000)
             // Character Box
             this.characterBox?.fillStyle(0xACACAC) // Gray Box 
@@ -326,7 +343,7 @@ export default class SettingScene extends Phaser.Scene {
     }
     
     charShift(i : number){
-        this.showingCharIndex = (this.showingCharIndex + i + this.charactersFrames.length ) % this.charactersFrames.length // prevent negative number
+        this.showingCharIndex = (this.showingCharIndex + i + this.charactersCount ) % this.charactersCount // prevent negative number
     
     }
 
