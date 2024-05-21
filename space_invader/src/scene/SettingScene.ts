@@ -22,7 +22,7 @@ export default class SettingScene extends Phaser.Scene {
     private showingCharImg : Phaser.GameObjects.Image | undefined
     private showingCharText : Phaser.GameObjects.Text | undefined
 
-    private usingCharIndex = 0 // from database
+    private usingCharIndex = 2 // from database
 
     private characterBox: Phaser.GameObjects.Graphics | undefined
 
