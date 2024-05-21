@@ -13,14 +13,20 @@ export default class SettingScene extends Phaser.Scene {
     private editNameForm : Phaser.GameObjects.DOMElement | undefined
     private usernameText : Phaser.GameObjects.Text | undefined
 
-    private airflowText: Phaser.GameObjects.Text | undefined
-    private medicalAdviceText : Phaser.GameObjects.Text | undefined
+    private editNameIcon : Phaser.GameObjects.Image | undefined
 
     // Character Select
     private characterSelectUi : characterSelectUi | undefined
 
+    private airflowEditText: Phaser.GameObjects.Text | undefined
+    private medicalAdviceText : Phaser.GameObjects.Text | undefined
+
     // Airflow Box
     private airflowBox : Phaser.GameObjects.Graphics | undefined
+    private editAirflowForm : Phaser.GameObjects.DOMElement | undefined
+    private airflowText : Phaser.GameObjects.Text | undefined
+
+    private editAirflowIcon : Phaser.GameObjects.Image | undefined
 
     //Difficulty
     private difficultyText : Phaser.GameObjects.Text | undefined
@@ -31,6 +37,7 @@ export default class SettingScene extends Phaser.Scene {
     private airflow : number | undefined
 
     private blackWindow : Phaser.GameObjects.Shape | undefined
+    private popUpBox : Phaser.GameObjects.Graphics | undefined
 
     constructor() {
         super('setting')
@@ -82,7 +89,7 @@ export default class SettingScene extends Phaser.Scene {
         
 
         // Edit Name Icon
-        this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
+        this.editNameIcon = this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
             .setInteractive().on('pointerdown', () => this.popUpEditName())
             .setOrigin(1,0.5) // Guessed the coordinate
 
@@ -106,7 +113,7 @@ export default class SettingScene extends Phaser.Scene {
 
         // Airflow Text
         this.add.image(216, 816, 'sheet', 'logo_setting_airflow.png').setOrigin(0,0) // Icon
-        this.airflowText = this.add.text( 216 + 59 + 13, 816 -13, "ปริมาณอากาศ" )
+        this.airflowEditText = this.add.text( 216 + 59 + 13, 816 -13, "ปริมาณอากาศ" )
             .setFontSize(32)
             .setPadding(0,20,0,10)
             .setColor("#57453B") 
@@ -125,7 +132,11 @@ export default class SettingScene extends Phaser.Scene {
         this.airflowBox.fillRoundedRect( width/2 - 164, 920, 328, 56 )
         this.airflowBox.lineStyle(1, 0x727272)
         this.airflowBox.strokeRoundedRect( width/2 - 164, 920, 328, 56 )
-        this.add.image(width/2 + 164 - 20, 920 + 28, "sheet", "logo_setting_edit airflow.png").setOrigin(1,0.5) // Guessed the coordinate
+
+        // Edit Airflow Icon
+        this.editAirflowIcon = this.add.image(width/2 + 164 - 20, 920 + 28, "sheet", "logo_setting_edit airflow.png")
+            .setInteractive().on('pointerdown', () => this.popUpEditAirflow())
+            .setOrigin(1,0.5) // Guessed the coordinate
 
         // Airflow Number
         this.add.text(width/2, 920 + 28, this.airflow.toString())
@@ -146,26 +157,42 @@ export default class SettingScene extends Phaser.Scene {
         // Black Screen When Pop Up
         this.blackWindow = this.add.rectangle(0, 0, width, height, 0, 0.5).setOrigin(0, 0).setVisible(false)
 
+        // Pop Up Box
+        this.popUpBox = this.add.graphics()
+            .fillStyle(0xffffff)
+            .setVisible(false)
+
         // Pop Up Form
         const self = this
-        this.editNameForm = this.add.dom( width/2, 345 + 295 ).createFromCache('editnameForm')
-        let element = this.editNameForm
-        element.addListener('click')
-        element.on('click', function(event : any) {
+        this.editNameForm = this.add.dom( 72 + 48, 345 + 48 )
+            .setOrigin(0,0)
+            .createFromCache('editnameForm')
+        let editNameDom = this.editNameForm
+        editNameDom.addListener('click')
+        editNameDom.on('click', function(event : any) {
             if(event.target.name === 'submit') {
                 const inputUsername = this.getChildByName('namefield').value
                 if (inputUsername != ''){
                     self.updateUsername(inputUsername)
                 }
-                element.setVisible(false)
-                self.blackWindow?.setVisible(false)
+                self.closeEditNamePopUp()
+                editNameDom.setVisible(false)
             }
             if(event.target.name === 'cancel'){
-                element.setVisible(false)
-                self.blackWindow?.setVisible(false)
+                self.closeEditNamePopUp()
+                editNameDom.setVisible(false)
             }
         })
         this.editNameForm.setVisible(false)
+
+        this.editAirflowForm = this.add.dom( width/2, 345 + 295 ).createFromCache('editairflowForm')
+        let editAirflowDom = this.editAirflowForm
+        editAirflowDom.addListener('click')
+        editAirflowDom.on('click', function(event : any) { 
+            self.closeEditAirflowPopUp()
+            editAirflowDom.setVisible(false)
+        })
+        this.editAirflowForm.setVisible(false)
 
         // Set font for all texts
         WebFont.load({
@@ -185,11 +212,6 @@ export default class SettingScene extends Phaser.Scene {
 
     }
 
-    popUpEditName() : void {
-        this.editNameForm?.setVisible(true)
-        this.blackWindow?.setVisible(true)
-    }
-
     setAllText(style : any) : void {
         this.usernameText?.setStyle(style)
 
@@ -199,13 +221,60 @@ export default class SettingScene extends Phaser.Scene {
 
         this.headingText?.setStyle(style)
 
-        this.airflowText?.setStyle(style)
+        this.airflowEditText?.setStyle(style)
         this.medicalAdviceText?.setStyle(style)
         this.difficultyText?.setStyle(style)
+    }
+
+    popUpEditName() : void {
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(true)
+        this.popUpBox?.fillStyle(0xffffff)
+        this.popUpBox?.fillRoundedRect(72,345,576,590,48)
+        this.setInteractiveOff()
+        this.editNameForm?.setVisible(true)
+        this.blackWindow?.setVisible(true)
+    }
+
+    closeEditNamePopUp() : void {
+        this.blackWindow?.setVisible(false)
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(false)
+        this.setInteractiveOn()
     }
 
     updateUsername(newUsername : string) : void {
         this.username = newUsername
         this.usernameText?.setText(newUsername)
+    }
+
+    popUpEditAirflow() : void {
+        this.popUpBox?.setVisible(true)
+        this.popUpBox?.fillStyle(0xffffff)
+        this.popUpBox?.fillRoundedRect(72,305,576,680,48) // for testing
+        this.setInteractiveOff()
+        this.editAirflowForm?.setVisible(true)
+        this.blackWindow?.setVisible(true)
+    }
+
+    closeEditAirflowPopUp() : void {
+        this.blackWindow?.setVisible(false)
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(false)
+        this.setInteractiveOn()
+    }
+
+    setInteractiveOff() : void {
+        this.characterSelectUi?.setInteractiveOff()
+        this.difficultySelectUi?.setInteractiveOff()
+        
+        this.editNameIcon?.setInteractive().off('pointerdown')
+    }
+
+    setInteractiveOn() : void {
+        this.characterSelectUi?.setInteractiveOn()
+        this.difficultySelectUi?.setInteractiveOn()
+
+        this.editNameIcon?.setInteractive().on('pointerdown', () => this.popUpEditName())
     }
 }

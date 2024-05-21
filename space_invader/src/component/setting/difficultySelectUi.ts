@@ -107,4 +107,16 @@ export default class difficultySelectUi {
         this.mediumText?.setStyle(style)
         this.hardText?.setStyle(style)
     }
+
+    setInteractiveOff() : void {
+        this.disableEasyButton?.setInteractive().off('pointerdown')
+        this.disableMediumButton?.setInteractive().off('pointerdown')
+        this.disableHardButton?.setInteractive().off('pointerdown')
+    }
+
+    setInteractiveOn() : void {
+        this.disableEasyButton?.setInteractive().on( 'pointerdown', () => this.changeDifficulty(0) )
+        this.disableMediumButton?.setInteractive().on( 'pointerdown', () => this.changeDifficulty(1) )
+        this.disableHardButton?.setInteractive().on( 'pointerdown', () => this.changeDifficulty(2) )
+    }
 }

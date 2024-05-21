@@ -2,9 +2,12 @@ export default class characterSelectUi {
     private scene : Phaser.Scene | undefined
     // Characters
     // from database
-    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png", "unlocked" : true},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png", "unlocked" : false },"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png", "unlocked" : true}}'
+    private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png", "unlocked" : true},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png", "unlocked" : true },"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png", "unlocked" : true}}'
     private characters = JSON.parse(this.charactersJSON)
     private charactersCount : number = Object.keys(this.characters).length
+
+    private prevButton : Phaser.GameObjects.Shape | undefined
+    private nextButton : Phaser.GameObjects.Shape | undefined
     
     private showingCharIndex = 0
     // private showingChar= this.characters[this.showingCharIndex]['frame']
@@ -33,10 +36,10 @@ export default class characterSelectUi {
         // Arrows
         this.scene.add.image( 200, 564, 'sheet', "logo_setting_next.png" ).setOrigin(0,0.5)
         this.scene.add.image( 520, 564, 'sheet', "logo_setting_next.png" ).setFlipX(true).setOrigin(1,0.5)
-        const prevButton = this.scene.add.rectangle(192, 564, 50, 120,0xFFFFFF,0).setOrigin(0,0.5)
-        const nextButton = this.scene.add.rectangle(528, 564, 50, 120,0xFFFFFF,0).setOrigin(1,0.5)
-        prevButton.setInteractive().on('pointerdown', () => this.charShift(-1)) // Make the functional button larger than arrow sprite
-        nextButton.setInteractive().on('pointerdown', () => this.charShift(1))
+        this.prevButton = this.scene.add.rectangle(192, 564, 50, 120,0xFFFFFF,0).setOrigin(0,0.5)
+        this.nextButton = this.scene.add.rectangle(528, 564, 50, 120,0xFFFFFF,0).setOrigin(1,0.5)
+        this.prevButton.setInteractive().on('pointerdown', () => this.charShift(-1)) // Make the functional button larger than arrow sprite
+        this.nextButton.setInteractive().on('pointerdown', () => this.charShift(1))
         // Showing Character
         this.showingCharImg = this.scene.add.image( width/2, 504, 'sheet', this.characters[this.showingCharIndex]['frame']).setOrigin(0.5,0.5)
         // Character Text (Name)
@@ -138,5 +141,19 @@ export default class characterSelectUi {
     setFont(style : any) : void {
         this.showingCharText?.setStyle(style)
         this.useText?.setStyle(style)
+    }
+
+    setInteractiveOff() : void {
+        this.useButton?.setInteractive().off('pointerdown')
+        this.prevButton?.setInteractive().off('pointerdown')
+        this.nextButton?.setInteractive().off('pointerdown')
+    }
+
+    setInteractiveOn() : void {
+        this.prevButton?.setInteractive().on( 'pointerdown', () => this.charShift(-1) )
+        this.nextButton?.setInteractive().on( 'pointerdown', () => this.charShift(1) )
+        if (this.characters[this.showingCharIndex]["unlocked"] && this.showingCharIndex != this.usingCharIndex) {
+            this.useButton?.setInteractive().on( 'pointerdown', () => this.useChar() )
+        }
     }
 }
