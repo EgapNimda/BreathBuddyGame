@@ -1,4 +1,4 @@
-export default class characterSelect {
+export default class characterSelectUi {
     private scene : Phaser.Scene | undefined
     // Characters
     // from database
@@ -11,7 +11,7 @@ export default class characterSelect {
     private showingCharImg : Phaser.GameObjects.Image | undefined
     private showingCharText : Phaser.GameObjects.Text | undefined
 
-    private usingCharIndex = 0 // from database
+    private usingCharIndex : number | undefined // from database
 
     private characterBox: Phaser.GameObjects.Graphics | undefined
 
@@ -19,8 +19,9 @@ export default class characterSelect {
     private useButton : Phaser.GameObjects.NineSlice | undefined
     private useText : Phaser.GameObjects.Text | undefined
 
-    constructor(scene : Phaser.Scene) {
+    constructor(scene : Phaser.Scene, usingCharIndex?: number) {
         this.scene = scene
+        this.usingCharIndex = usingCharIndex === undefined ? 0 : usingCharIndex
         const { width,height } = scene.scale
 
         // Character Select Box
@@ -131,7 +132,7 @@ export default class characterSelect {
     }
 
     getUsingCharIndex() : number {
-        return this.usingCharIndex
+        return this.usingCharIndex === undefined ? -1 : this.usingCharIndex
     }
 
     setFont(style : any) : void {
