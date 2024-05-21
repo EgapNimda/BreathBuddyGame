@@ -2,7 +2,8 @@ import Phaser from "phaser";
 import { MARGIN } from 'config';
 // TODO Import Webfontloader
 import WebFont from 'webfontloader'
-import characterSelectUi from "component/setting/characterSelectUi";
+import characterSelectUi from "component/setting/characterSelectUi"
+import difficultySelectUi from "component/setting/difficultySelectUi";
 
 export default class SettingScene extends Phaser.Scene {
     // Heading
@@ -22,21 +23,8 @@ export default class SettingScene extends Phaser.Scene {
     private airflowBox : Phaser.GameObjects.Graphics | undefined
 
     //Difficulty
-    private difficulty = 0 // from database
-
     private difficultyText : Phaser.GameObjects.Text | undefined
-
-    private easyButton : Phaser.GameObjects.NineSlice | undefined
-    private mediumButton : Phaser.GameObjects.NineSlice | undefined
-    private hardButton : Phaser.GameObjects.NineSlice | undefined
-
-    private disableEasyButton : Phaser.GameObjects.Graphics | undefined
-    private disableMediumButton : Phaser.GameObjects.Graphics| undefined
-    private disableHardButton : Phaser.GameObjects.Graphics | undefined
-
-    private easyText : Phaser.GameObjects.Text | undefined
-    private mediumText : Phaser.GameObjects.Text | undefined
-    private hardText : Phaser.GameObjects.Text | undefined
+    private difficultySelectUi : difficultySelectUi | undefined
 
     // from database
     private username : string | undefined
@@ -153,48 +141,7 @@ export default class SettingScene extends Phaser.Scene {
             .setColor("#57453B") 
             .setOrigin(0,0)
 
-        // Difficulty Boxes
-        this.easyButton = this.add.nineslice(width/2 - 96, 1088, 'sheet', 'button_medium.png',144,80).setOrigin(1,0)
-        this.mediumButton = this.add.nineslice(width/2, 1088, 'sheet', 'button_medium.png',144,80).setOrigin(0.5,0)
-        this.hardButton = this.add.nineslice(width/2 + 96, 1088, 'sheet', 'button_medium.png',144,80).setOrigin(0,0)
-        
-        // Gray boxes
-        // Easy
-        this.disableEasyButton = this.add.graphics()
-        this.disableEasyButton.fillStyle(0xC7BEB0)
-        this.disableEasyButton.fillRoundedRect(120, 1088, 144, 80, 14)
-
-        // Medium
-        this.disableMediumButton = this.add.graphics()
-        this.disableMediumButton.fillStyle(0xC7BEB0)
-        this.disableMediumButton.fillRoundedRect(288, 1088, 144, 80, 14)
-
-        // Hard
-        this.disableHardButton = this.add.graphics()
-        this.disableHardButton.fillStyle(0xC7BEB0)
-        this.disableHardButton.fillRoundedRect(456, 1088, 144, 80, 14)
-
-        // Set button in these gray boxes
-        this.disableEasyButton.setInteractive( new Phaser.Geom.Rectangle(120, 1088, 144, 80), Phaser.Geom.Rectangle.Contains )
-            .on('pointerdown', () => this.changeDifficulty(0))
-        this.disableMediumButton.setInteractive( new Phaser.Geom.Rectangle(288, 1088, 144, 80), Phaser.Geom.Rectangle.Contains )
-            .on('pointerdown', () => this.changeDifficulty(1))
-        this.disableHardButton.setInteractive( new Phaser.Geom.Rectangle(456, 1088, 144, 80), Phaser.Geom.Rectangle.Contains )
-            .on('pointerdown', () => this.changeDifficulty(2))
-
-        // Difficulty Texts
-        this.easyText = this.add.text( width/2 - 168, 1088 + 40, "ง่าย")
-            .setFontSize(28)
-            .setOrigin(0.5,0.5)
-        this.mediumText = this.add.text( width/2, 1088 + 40, "ปานกลาง")
-            .setFontSize(28)
-            .setOrigin(0.5,0.5)
-        this.hardText = this.add.text( width/2 + 168, 1088 + 40, "ยาก")
-            .setFontSize(28)
-            .setOrigin(0.5,0.5)
-
-        // Initiate Difficulty
-        this.changeDifficulty(this.difficulty)
+        this.difficultySelectUi = new difficultySelectUi(this)
 
         // Black Screen When Pop Up
         this.blackWindow = this.add.rectangle(0, 0, width, height, 0, 0.5).setOrigin(0, 0).setVisible(false)
@@ -235,43 +182,7 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     update() {
-        
-    }
 
-    changeDifficulty(difficulty : number) : void {
-        this.difficulty = difficulty
-        // Set Difficulty
-        if (this.difficulty === 0) { // Easy
-            // Set Button
-            this.disableEasyButton?.setVisible(false)
-            this.disableMediumButton?.setVisible(true)
-            this.disableHardButton?.setVisible(true)
-
-            // Set Text
-            this.easyText?.setStroke("#327F76", 6)
-            this.mediumText?.setStroke("#BF7F03", 0)
-            this.hardText?.setStroke("#9E461B", 0)
-        }
-        if (this.difficulty === 1) { // Medium
-            this.disableEasyButton?.setVisible(true)
-            this.disableMediumButton?.setVisible(false)
-            this.disableHardButton?.setVisible(true)
-
-            // Set Text
-            this.easyText?.setStroke("#327F76", 0)
-            this.mediumText?.setStroke("#BF7F03", 6)
-            this.hardText?.setStroke("#9E461B", 0)
-        }
-        if (this.difficulty === 2) { // Hard
-            this.disableEasyButton?.setVisible(true)
-            this.disableMediumButton?.setVisible(true)
-            this.disableHardButton?.setVisible(false)
-
-            // Set Text
-            this.easyText?.setStroke("#327F76", 0)
-            this.mediumText?.setStroke("#BF7F03", 0)
-            this.hardText?.setStroke("#9E461B", 6)
-        }
     }
 
     popUpEditName() : void {
@@ -284,10 +195,8 @@ export default class SettingScene extends Phaser.Scene {
 
         this.characterSelectUi?.setFont(style)
 
-        this.easyText?.setStyle(style)
-        this.mediumText?.setStyle(style)
-        this.hardText?.setStyle(style)
-        
+        this.difficultySelectUi?.setFont(style)
+
         this.headingText?.setStyle(style)
 
         this.airflowText?.setStyle(style)
