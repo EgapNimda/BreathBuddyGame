@@ -12,7 +12,7 @@ export default class SettingScene extends Phaser.Scene {
     private usernameText : Phaser.GameObjects.Text | undefined
 
     // Characters
-    private unlockedCharacters = [0, 1, 2] // from database
+    // from database
     private charactersJSON = '{ "0" : {"name" : "นักผจญภัย", "frame" : "logo_setting_mc1.png", "unlocked" : true},"1" : {"name" : "นักเวทย์", "frame" : "logo_setting_mc2.png", "unlocked" : false },"2" : {"name" : "จอมโจร", "frame" : "logo_setting_mc3.png", "unlocked" : true}}'
     private characters = JSON.parse(this.charactersJSON)
     private charactersCount : number = Object.keys(this.characters).length
@@ -56,6 +56,8 @@ export default class SettingScene extends Phaser.Scene {
     // from database
     private username : string | undefined
     private airflow : number | undefined
+
+    private blackWindow : Phaser.GameObjects.Shape | undefined
 
     constructor() {
         super('setting')
@@ -110,12 +112,6 @@ export default class SettingScene extends Phaser.Scene {
         this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
             .setInteractive().on('pointerdown', () => this.popUpEditName())
             .setOrigin(1,0.5) // Guessed the coordinate
-        // Pop Up Form
-        this.editNameForm = this.add.dom( width/2, 345 + 295 ).createFromCache('editnameForm')
-        let element = this.editNameForm
-        element.addListener('click');
-
-        this.editNameForm.setVisible(false)
 
         // Username Text
         this.usernameText = this.add.text(width/2, 320+28 ,this.username)
@@ -258,10 +254,31 @@ export default class SettingScene extends Phaser.Scene {
         this.changeDifficulty(this.difficulty)
 
         // Black Screen When Pop Up
-        this.add.rectangle(0, 0, width, height, 0, 0.5).setOrigin(0, 0).setVisible(false)
+        this.blackWindow = this.add.rectangle(0, 0, width, height, 0, 0.5).setOrigin(0, 0).setVisible(false)
+
+        // Pop Up Form
+        const self = this
+        this.editNameForm = this.add.dom( width/2, 345 + 295 ).createFromCache('editnameForm')
+        let element = this.editNameForm
+        element.addListener('click')
+        element.on('click', function(event : any) {
+            if(event.target.name === 'submit') {
+                const inputUsername = this.getChildByName('namefield').value
+                if (inputUsername != ''){
+                    self.updateUsername(inputUsername)
+                }
+                element.setVisible(false)
+                self.blackWindow?.setVisible(false)
+            }
+            if(event.target.name === 'cancel'){
+                element.setVisible(false)
+                self.blackWindow?.setVisible(false)
+            }
+        })
+        this.editNameForm.setVisible(false)
 
         // Set font for all texts
-        const self = this
+        // const self = this
         WebFont.load({
             google: {
               families: ['Mali:Bold 700']
@@ -379,6 +396,7 @@ export default class SettingScene extends Phaser.Scene {
 
     popUpEditName() : void {
         this.editNameForm?.setVisible(true)
+        this.blackWindow?.setVisible(true)
     }
 
     setAllText(style : any) : void {
@@ -395,5 +413,10 @@ export default class SettingScene extends Phaser.Scene {
         this.airflowText?.setStyle(style)
         this.medicalAdviceText?.setStyle(style)
         this.difficultyText?.setStyle(style)
+    }
+
+    updateUsername(newUsername : string) : void {
+        this.username = newUsername
+        this.usernameText?.setText(newUsername)
     }
 }
