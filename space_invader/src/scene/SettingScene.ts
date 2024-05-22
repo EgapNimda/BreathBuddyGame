@@ -23,8 +23,9 @@ export default class SettingScene extends Phaser.Scene {
 
     // Airflow Box
     private airflowBox : Phaser.GameObjects.Graphics | undefined
-    private editAirflowForm1 : Phaser.GameObjects.DOMElement | undefined
     private airflowText : Phaser.GameObjects.Text | undefined
+    private editAirflowForm1 : Phaser.GameObjects.DOMElement | undefined
+    private editAirflowForm2 : Phaser.GameObjects.DOMElement | undefined
 
     private editAirflowIcon : Phaser.GameObjects.Image | undefined
 
@@ -58,6 +59,7 @@ export default class SettingScene extends Phaser.Scene {
 
         this.load.html('editnameForm', 'html/setting/editname.html')
         this.load.html('editairflowForm1', 'html/setting/editairflow1.html')
+        this.load.html('editairflowForm2', 'html/setting/editairflow2.html')
     }
 
     create(){
@@ -186,17 +188,36 @@ export default class SettingScene extends Phaser.Scene {
         })
         this.editNameForm.setVisible(false)
 
-        // Edit Airflow
-        this.editAirflowForm1 = this.add.dom( 72 + 48, 345 + 48 )
+        // Edit Airflow1
+        this.editAirflowForm1 = this.add.dom( 72 + 48, 345 + 48 - 250 )
             .setOrigin(0,0)
             .createFromCache('editairflowForm1')
-        let editAirflowDom = this.editAirflowForm1
-        editAirflowDom.addListener('click')
-        editAirflowDom.on('click', function(event : any) { 
-            self.closeEditAirflowPopUp()
-            editAirflowDom.setVisible(false)
+        let editAirflowDom1 = this.editAirflowForm1
+        editAirflowDom1.addListener('click')
+        editAirflowDom1.on('click', function(event : any) { 
+            if(event.target.name === 'cancel') {
+                self.closeEditAirflowPopUp1()
+                editAirflowDom1.setVisible(false)
+            }
+            if(event.target.name === 'submit') {
+                self.closeEditAirflowPopUp1()
+                editAirflowDom1.setVisible(false)
+                self.popUpEditAirflow2()
+            }
+            
         })
         this.editAirflowForm1.setVisible(false)
+
+        // Edit Airflow2
+        this.editAirflowForm2 = this.add.dom( 72 + 48, 345 + 48 - 250 )
+            .setOrigin(0,0)
+            .createFromCache('editAirflowForm2')
+        let editAirflowDom2 = this.editAirflowForm2
+        editAirflowDom2.addListener('click')
+        editAirflowDom2.on('click', function (event : any) {
+            console.log("Bunda")
+        })
+        this.editAirflowForm2.setVisible(false)
 
         // Set font for all texts
         WebFont.load({
@@ -210,6 +231,8 @@ export default class SettingScene extends Phaser.Scene {
               self.setAllText(menuUiStyle)
             }
           });
+
+        //this.popUpEditAirflow2()
     }
 
     update() {
@@ -231,11 +254,11 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     popUpEditName() : void {
+        this.setInteractiveOff()
         this.popUpBox?.clear()
         this.popUpBox?.setVisible(true)
         this.popUpBox?.fillStyle(0xffffff)
         this.popUpBox?.fillRoundedRect(72,345,576,590,48)
-        this.setInteractiveOff()
         this.editNameForm?.setVisible(true)
         this.blackWindow?.setVisible(true)
     }
@@ -253,19 +276,28 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     popUpEditAirflow1() : void {
+        this.setInteractiveOff()
         this.popUpBox?.setVisible(true)
         this.popUpBox?.fillStyle(0xffffff)
-        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // size vary, change later
-        this.setInteractiveOff()
+        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later
         this.editAirflowForm1?.setVisible(true)
         this.blackWindow?.setVisible(true)
     }
 
-    closeEditAirflowPopUp() : void {
+    closeEditAirflowPopUp1() : void {
         this.blackWindow?.setVisible(false)
         this.popUpBox?.clear()
         this.popUpBox?.setVisible(false)
         this.setInteractiveOn()
+    }
+
+    popUpEditAirflow2() : void {
+        this.setInteractiveOff()
+        /*this.popUpBox?.setVisible(true)
+        this.popUpBox?.fillStyle(0xffffff)
+        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later*/
+        this.editAirflowForm2?.setVisible(true)
+        this.blackWindow?.setVisible(true)
     }
 
     setInteractiveOff() : void {
@@ -273,6 +305,7 @@ export default class SettingScene extends Phaser.Scene {
         this.difficultySelectUi?.setInteractiveOff()
         
         this.editNameIcon?.setInteractive().off('pointerdown')
+        this.editAirflowIcon?.setInteractive().off('pointerdown')
     }
 
     setInteractiveOn() : void {
@@ -280,5 +313,6 @@ export default class SettingScene extends Phaser.Scene {
         this.difficultySelectUi?.setInteractiveOn()
 
         this.editNameIcon?.setInteractive().on('pointerdown', () => this.popUpEditName())
+        this.editAirflowIcon?.setInteractive().on('pointerdown', () => this.popUpEditAirflow1())
     }
 }
