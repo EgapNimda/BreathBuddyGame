@@ -26,6 +26,10 @@ export default class SettingScene extends Phaser.Scene {
     private airflowText : Phaser.GameObjects.Text | undefined
     private editAirflowForm1 : Phaser.GameObjects.DOMElement | undefined
     private editAirflowForm2 : Phaser.GameObjects.DOMElement | undefined
+    private editAirflowForm3 : Phaser.GameObjects.DOMElement | undefined
+    private editAirflowForm4 : Phaser.GameObjects.DOMElement | undefined
+    private editAirflowForm5 : Phaser.GameObjects.DOMElement | undefined
+    private airflowInput : number | undefined
 
     private editAirflowIcon : Phaser.GameObjects.Image | undefined
 
@@ -60,6 +64,9 @@ export default class SettingScene extends Phaser.Scene {
         this.load.html('editnameForm', 'html/setting/editname.html')
         this.load.html('editairflowForm1', 'html/setting/editairflow1.html')
         this.load.html('editairflowForm2', 'html/setting/editairflow2.html')
+        this.load.html('editairflowForm3', 'html/setting/editairflow3.html')
+        this.load.html('editairflowForm4', 'html/setting/editairflow4.html')
+        this.load.html('editairflowForm5', 'html/setting/editairflow5.html')
     }
 
     create(){
@@ -141,7 +148,7 @@ export default class SettingScene extends Phaser.Scene {
             .setOrigin(1,0.5) // Guessed the coordinate
 
         // Airflow Number
-        this.add.text(width/2, 920 + 28, this.airflow.toString())
+        this.airflowText = this.add.text(width/2, 920 + 28, this.airflow.toString())
             .setFontSize(32)
             .setColor("#57453B")
             .setOrigin(0.5,0.5)
@@ -210,14 +217,80 @@ export default class SettingScene extends Phaser.Scene {
 
         // Edit Airflow2
         this.editAirflowForm2 = this.add.dom( 72 + 48, 345 + 48 - 250 )
+            .createFromCache('editairflowForm2')
             .setOrigin(0,0)
-            .createFromCache('editAirflowForm2')
         let editAirflowDom2 = this.editAirflowForm2
         editAirflowDom2.addListener('click')
         editAirflowDom2.on('click', function (event : any) {
-            console.log("Bunda")
+            const inputCheck = this.getChildByName('checkbox').checked
+            if(event.target.name === 'cancel') {
+                self.closeEditAirflowPopUp2()
+                editAirflowDom2.setVisible(false)
+            }
+            if(event.target.name === 'submit') {
+                if(inputCheck){
+                    self.closeEditAirflowPopUp2()
+                    editAirflowDom2.setVisible(false)
+                    self.popUpEditAirflow3()
+                }
+            }
         })
         this.editAirflowForm2.setVisible(false)
+
+        // Edit Airflow3
+        this.editAirflowForm3 = this.add.dom( 72 + 48, 345 + 48 - 250 )
+            .createFromCache('editairflowForm3')
+            .setOrigin(0,0)
+        let editAirflowDom3 = this.editAirflowForm3
+        editAirflowDom3.addListener('click')
+        editAirflowDom3.on('click', function (event : any) {
+            const airflowInput = this.getChildByName('select').value
+            if(event.target.name === 'cancel') {
+                self.closeEditAirflowPopUp3()
+                editAirflowDom3.setVisible(false)
+            }
+            if(event.target.name === 'submit') {
+                self.closeEditAirflowPopUp3()
+                editAirflowDom3.setVisible(false)
+                self.airflowInput = Number(airflowInput)
+                self.popUpEditAirflow4()
+            }
+        })
+        this.editAirflowForm3.setVisible(false)
+
+        // Edit Airflow 4
+        this.editAirflowForm4 = this.add.dom( 72 + 48, 345 + 48 - 250 )
+            .createFromCache('editairflowForm4')
+            .setOrigin(0,0)
+        let editAirflowDom4 = this.editAirflowForm4
+        editAirflowDom4.addListener('click')
+        editAirflowDom4.on('click', function (event : any) {
+            if(event.target.name === 'cancel') {
+                self.closeEditAirflowPopUp4()
+                editAirflowDom4.setVisible(false)
+            }
+            if(event.target.name === 'submit') {
+                self.closeEditAirflowPopUp4()
+                editAirflowDom4.setVisible(false)
+                self.updateAirflow(self.airflowInput === undefined ? 100 : self.airflowInput)
+                self.popUpEditAirflow5()
+            }
+        })
+        this.editAirflowForm4.setVisible(false)
+
+        // Edit Airflow 5
+        this.editAirflowForm5 = this.add.dom( 72 + 48, 345 + 48 - 250 )
+            .createFromCache('editairflowForm5')
+            .setOrigin(0,0)
+        let editAirflowDom5 = this.editAirflowForm5
+        editAirflowDom5.addListener('click')
+        editAirflowDom5.on('click', function (event : any) {
+            if(event.target.name === 'submit') {
+                self.closeEditAirflowPopUp5()
+                editAirflowDom5.setVisible(false)
+            }
+        })
+        this.editAirflowForm5.setVisible(false)
 
         // Set font for all texts
         WebFont.load({
@@ -232,7 +305,7 @@ export default class SettingScene extends Phaser.Scene {
             }
           });
 
-        //this.popUpEditAirflow2()
+        this.popUpEditAirflow3()
     }
 
     update() {
@@ -261,6 +334,10 @@ export default class SettingScene extends Phaser.Scene {
         this.popUpBox?.fillRoundedRect(72,345,576,590,48)
         this.editNameForm?.setVisible(true)
         this.blackWindow?.setVisible(true)
+
+        // Set default value
+        const namefieldValue = <Element>this.editNameForm?.getChildByName('namefield')
+        namefieldValue.value = this.username
     }
 
     closeEditNamePopUp() : void {
@@ -293,11 +370,76 @@ export default class SettingScene extends Phaser.Scene {
 
     popUpEditAirflow2() : void {
         this.setInteractiveOff()
-        /*this.popUpBox?.setVisible(true)
+        this.popUpBox?.setVisible(true)
         this.popUpBox?.fillStyle(0xffffff)
-        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later*/
+        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later
         this.editAirflowForm2?.setVisible(true)
         this.blackWindow?.setVisible(true)
+    }
+
+    closeEditAirflowPopUp2() : void {
+        this.blackWindow?.setVisible(false)
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(false)
+        this.setInteractiveOn()
+    }
+
+    popUpEditAirflow3() : void {
+        this.setInteractiveOff()
+        this.popUpBox?.setVisible(true)
+        this.popUpBox?.fillStyle(0xffffff)
+        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later
+        this.editAirflowForm3?.setVisible(true)
+        this.blackWindow?.setVisible(true)
+    }
+
+    closeEditAirflowPopUp3() : void {
+        this.blackWindow?.setVisible(false)
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(false)
+        this.setInteractiveOn()
+    }
+
+    popUpEditAirflow4() : void {
+        this.setInteractiveOff()
+        this.popUpBox?.setVisible(true)
+        this.popUpBox?.fillStyle(0xffffff)
+        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later
+        this.editAirflowForm4?.setVisible(true)
+        this.blackWindow?.setVisible(true)
+
+        const currentAirflow = <Element>this.editAirflowForm4?.getChildByName('currentAirflow') ! as HTMLElement;
+        // currentAirflow.textContent = this.airflow === undefined ? 'xxx' : this.airflow.toString()
+        console.log(currentAirflow.textContent);
+        currentAirflow.textContent = "Bunda";
+    }
+
+    closeEditAirflowPopUp4() : void {
+        this.blackWindow?.setVisible(false)
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(false)
+        this.setInteractiveOn()
+    }
+
+    popUpEditAirflow5() : void {
+        this.setInteractiveOff()
+        this.popUpBox?.setVisible(true)
+        this.popUpBox?.fillStyle(0xffffff)
+        this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later
+        this.editAirflowForm5?.setVisible(true)
+        this.blackWindow?.setVisible(true)
+    }
+
+    closeEditAirflowPopUp5() : void {
+        this.blackWindow?.setVisible(false)
+        this.popUpBox?.clear()
+        this.popUpBox?.setVisible(false)
+        this.setInteractiveOn()
+    }
+
+    updateAirflow(airflow : number) : void {
+        this.airflow = airflow
+        this.airflowText?.setText(this.airflow.toString())
     }
 
     setInteractiveOff() : void {
