@@ -1,3 +1,5 @@
+import I18nSingleton from "i18n/I18nSingleton"
+
 export default class characterSelectUi {
     private scene : Phaser.Scene | undefined
     // Characters
@@ -21,11 +23,14 @@ export default class characterSelectUi {
     private usingButton : Phaser.GameObjects.Graphics | undefined
     private useButton : Phaser.GameObjects.NineSlice | undefined
     private useText : Phaser.GameObjects.Text | undefined
+    private usingText : Phaser.GameObjects.Text | undefined
 
     constructor(scene : Phaser.Scene, usingCharIndex?: number) {
         this.scene = scene
         this.usingCharIndex = usingCharIndex === undefined ? 0 : usingCharIndex
         const { width,height } = scene.scale
+
+        const i18n = I18nSingleton.getInstance()
 
         // Character Select Box
         //this.characterBox = this.scene.add.rectangle( width/2, 504, 336, 120, 0x43A99E ).setOrigin(0.5,0) 
@@ -63,13 +68,19 @@ export default class characterSelectUi {
 
         // set Button
         this.useButton.setInteractive().on('pointerdown', () => this.useChar())
-        this.useText = this.scene.add.text(width/2, 680 -3, this.usingCharIndex == this.showingCharIndex ? "ใช้อยู่" : "ใช้")
+        this.useText = i18n.createTranslatedText( scene, width/2, 680 -3, "use_button" )
             .setFontSize(32)
             .setPadding(0,20,0,10)
             .setStroke("#9E461B",6)
             .setColor("#FFFFFF")
             .setOrigin(0.5,0.5)
 
+        this.usingText = i18n.createTranslatedText( scene, width/2, 680 -3, "using_button" )
+            .setFontSize(32)
+            .setPadding(0,20,0,10)
+            .setStroke("#D35E24",6)
+            .setColor("#FFFFFF")
+            .setOrigin(0.5,0.5)
         // Initiate First Character
         this.charShift(0)
     }
@@ -97,13 +108,15 @@ export default class characterSelectUi {
             if (this.showingCharIndex === this.usingCharIndex) { // Currently Using Character
                 this.usingButton?.setVisible(true)
                 this.useButton?.setVisible(false)
-                this.useText?.setText("ใช้อยู่").setStroke('#D35E24', 6)
+                this.useText?.setVisible(false)
+                this.usingText?.setVisible(true)
             }
             else { // Other Characters
                 this.usingButton?.setVisible(false)
                 this.useButton?.setVisible(true)
                 this.useButton?.setInteractive().on('pointerdown', () => this.useChar())
-                this.useText?.setText("ใช้").setStroke('#9E461B', 6)
+                this.useText?.setVisible(true)
+                this.usingText?.setVisible(false)
 
             }
         }
@@ -122,6 +135,7 @@ export default class characterSelectUi {
             this.useButton?.setInteractive().off('pointerdown')
             this.usingButton?.setVisible(false)
             this.useText?.setVisible(false)
+            this.usingText?.setVisible(false)
             this.useButton?.setVisible(false)
         }
     
@@ -141,6 +155,7 @@ export default class characterSelectUi {
     setFont(style : any) : void {
         this.showingCharText?.setStyle(style)
         this.useText?.setStyle(style)
+        this.usingText?.setStyle(style)
     }
 
     setInteractiveOff() : void {
