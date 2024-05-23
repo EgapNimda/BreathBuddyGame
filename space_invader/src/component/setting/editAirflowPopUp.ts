@@ -1,3 +1,5 @@
+import i18next from "i18next"
+
 export default class editAirflowPopUp {
     private editAirflowForm1 : Phaser.GameObjects.DOMElement | undefined
     private editAirflowForm2 : Phaser.GameObjects.DOMElement | undefined
@@ -49,6 +51,19 @@ export default class editAirflowPopUp {
         this.editAirflowForm2 = scene.add.dom( 72 + 48, 345 + 48 - 250 )
             .createFromCache('editairflowForm2')
             .setOrigin(0,0)
+
+        const warning = <Element>this.editAirflowForm2.getChildByID('warning')
+        warning.textContent = i18next.t('warning')
+
+        const doctorInstructed = <Element>this.editAirflowForm2.getChildByID('doctor_instructed_confirm')
+        doctorInstructed.textContent = i18next.t('airflow_doctor_instructed_confirm')
+
+        const cancel2 = <Element>this.editAirflowForm2.getChildByID('cancel')
+        cancel2.textContent = i18next.t('cancel')
+
+        const submit2 = <Element>this.editAirflowForm2.getChildByID('submit')
+        submit2.textContent = i18next.t('submit_edit')
+
         this.editAirflowForm2.addListener('click')
         this.editAirflowForm2.on('click', function (event : any) {
             const inputCheck = this.getChildByName('checkbox').checked
@@ -66,10 +81,22 @@ export default class editAirflowPopUp {
         })
         this.editAirflowForm2.setVisible(false)
 
+        
+
         // Edit Airflow3
         this.editAirflowForm3 = scene.add.dom( 72 + 48, 345 + 48 - 250 )
             .createFromCache('editairflowForm3')
             .setOrigin(0,0)
+
+        const editAirflow = <Element>this.editAirflowForm3.getChildByID("edit_airflow")
+        editAirflow.textContent = i18next.t('edit_airflow')
+
+        const cancel3 = <Element>this.editAirflowForm3.getChildByID('cancel')
+        cancel3.textContent = i18next.t('cancel')
+
+        const submit3 = <Element>this.editAirflowForm3.getChildByID('submit')
+        submit3.textContent = i18next.t('submit_edit')
+
         this.editAirflowForm3.addListener('click')
         this.editAirflowForm3.on('click', function (event : any) {
             const airflowInput = this.getChildByName('select').value
@@ -90,6 +117,19 @@ export default class editAirflowPopUp {
         this.editAirflowForm4 = scene.add.dom( 72 + 48, 345 + 48 - 250 )
             .createFromCache('editairflowForm4')
             .setOrigin(0,0)
+
+        const confirmation = <Element> this.editAirflowForm4.getChildByID('confirmation')
+        confirmation.textContent = i18next.t('confirmation')
+
+        const changeAirflowConfirm = <Element> this.editAirflowForm4.getChildByID('change_airflow_confirm')
+        changeAirflowConfirm.textContent = i18next.t('airflow_confirm')
+
+        const cancel4 = <Element> this.editAirflowForm4.getChildByID('cancel')
+        cancel4.textContent = i18next.t('cancel')
+
+        const submit4 = <Element> this.editAirflowForm4.getChildByID('submit')
+        submit4.textContent = i18next.t('submit_edit')
+
         this.editAirflowForm4.addListener('click')
         this.editAirflowForm4.on('click', function (event : any) {
             if(event.target.name === 'cancel') {

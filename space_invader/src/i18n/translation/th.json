@@ -73,5 +73,13 @@
   "edit_your_name" : "แก้ไขชื่อของคุณ",
   "cancel" : "ยกเลิก",
   "submit" : "ยืนยัน",
-  "submit_edit" : "ยืนยันแก้ไข"
+  "submit_edit" : "ยืนยันแก้ไข",
+  "warning" : "แจ้งเตือน",
+  "airflow_doctor_instructed_confirm" : "ฉันได้รับคำแนะนำจากแพทย์ให้ปรับปริมาณอากาศ",
+  "edit_airflow" : "ปรับปริมาณอากาศ",
+  "from" : "จาก",
+  "to" : "เป็น",
+  "question" : "ใช่หรือไม่",
+  "confirmation" : "ตรวจสอบความถูกต้อง",
+  "airflow_confirm" : "คุณยืนยันที่จะปรับปริมาณอากาศ"
 }
