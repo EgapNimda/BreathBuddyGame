@@ -272,7 +272,7 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     update() {
-
+        console.log(this.characterSelectUi?.getUsingCharIndex())
     }
 
     setAllText(style : any) : void {

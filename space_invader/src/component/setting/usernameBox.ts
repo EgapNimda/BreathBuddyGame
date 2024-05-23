@@ -45,8 +45,10 @@ export default class usernameBox {
         this.editNameForm = scene.add.dom( 72 + 48, 345 + 48 )
             .setOrigin(0,0)
             .createFromCache('editnameForm')
+        this.editNameForm.addListener('click')
         this.editNameForm.on('click', function(event : any) {
             if(event.target.name === 'submit') {
+                console.log("test")
                 const inputUsername = self.editNameForm?.getChildByName('namefield')?.value
                 if (inputUsername != ''){
                     self.updateUsername(inputUsername)
