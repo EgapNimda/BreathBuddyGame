@@ -1,36 +1,16 @@
-export default class usernameBox {
-    private usernameBox : Phaser.GameObjects.Graphics | undefined
-    private editNameForm : Phaser.GameObjects.DOMElement | undefined
-    private usernameText : Phaser.GameObjects.Text | undefined
-    private editNameIcon : Phaser.GameObjects.Image | undefined
+export default class editUsernamePopUp {
     private username : string | undefined
+
+    private editNameForm : Phaser.GameObjects.DOMElement | undefined
 
     private blackWindow : Phaser.GameObjects.Shape | undefined
     private popUpBox : Phaser.GameObjects.Graphics | undefined
 
-    constructor(scene : Phaser.Scene, editNameIcon : Phaser.GameObjects.Image, username?: string) {
+    private isPopUp = false
+
+    constructor(scene : Phaser.Scene, username?: string) {
         const { width,height } = scene.scale
-        this.editNameIcon = editNameIcon
         this.username = username === undefined ? 'Player' : username
-
-        // Username Box
-        this.usernameBox = scene.add.graphics()
-        this.usernameBox.fillStyle(0xFFFFFF)
-        this.usernameBox.fillRoundedRect( width/2 - 168, 320, 336, 56, 14 )
-        this.usernameBox.lineStyle(1, 0x727272)
-        this.usernameBox.strokeRoundedRect( width/2 - 168, 320, 336, 56, 14 )
-
-        // Edit Name Icon
-        this.editNameIcon = scene.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
-            .setInteractive().on('pointerdown', () => this.popUpEditName())
-            .setOrigin(1,0.5) // Guessed the coordinate
-
-        // Username Text
-        this.usernameText = scene.add.text(width/2, 320+28 ,this.username)
-            .setColor("#57453B")
-            .setPadding(0,20,0,10)
-            .setFontSize(32)
-            .setOrigin(0.5,0.5)
 
         // Black Screen When Pop Up
         this.blackWindow = scene.add.rectangle(0, 0, width, height, 0, 0.5).setOrigin(0, 0).setVisible(false)
@@ -48,7 +28,6 @@ export default class usernameBox {
         this.editNameForm.addListener('click')
         this.editNameForm.on('click', function(event : any) {
             if(event.target.name === 'submit') {
-                console.log("test")
                 const inputUsername = self.editNameForm?.getChildByName('namefield')?.value
                 if (inputUsername != ''){
                     self.updateUsername(inputUsername)
@@ -67,7 +46,7 @@ export default class usernameBox {
 
 
     popUpEditName() : void {
-        this.setInteractiveOff()
+        //this.setInteractiveOff()
         this.popUpBox?.clear()
         this.popUpBox?.setVisible(true)
         this.popUpBox?.fillStyle(0xffffff)
@@ -78,25 +57,40 @@ export default class usernameBox {
         // Set default value
         const namefieldValue = <Element>this.editNameForm?.getChildByName('namefield')
         namefieldValue.value = this.username
+
+        this.isPopUp = true
     }
 
     closeEditNamePopUp() : void {
-        this.setInteractiveOn()
+        //this.setInteractiveOn()
         this.blackWindow?.setVisible(false)
         this.popUpBox?.clear()
         this.popUpBox?.setVisible(false)
+
+        this.isPopUp = false
     }
 
     updateUsername(newUsername : string) : void {
         this.username = newUsername
-        this.usernameText?.setText(newUsername)
     }
 
-    setInteractiveOn() : void {
+    getUsername() : string {
+        return this.username === undefined ? 'Player' : this.username
+    }
+
+    getIsPopUp() : boolean {
+        return this.isPopUp
+    }
+
+    /*setInteractiveOn() : void {
         this.editNameIcon?.setInteractive().on('pointerdown', () => this.popUpEditName())
     }
 
     setInteractiveOff() : void {
         this.editNameIcon?.setInteractive().off('pointerdown')
     }
+
+    setFont(style : any) : void {
+        this.usernameText?.setStyle(style)
+    }*/
 }
