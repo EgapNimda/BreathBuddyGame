@@ -2,17 +2,17 @@ import Phaser from "phaser";
 import { MARGIN } from 'config';
 // TODO Import Webfontloader
 import WebFont from 'webfontloader'
+import usernameBox from "component/setting/usernameBox";
 import characterSelectUi from "component/setting/characterSelectUi"
 import difficultySelectUi from "component/setting/difficultySelectUi";
+import I18nSingleton from "i18n/I18nSingleton";
 
 export default class SettingScene extends Phaser.Scene {
     // Heading
     private headingText : Phaser.GameObjects.Text | undefined
-    // Username Box
-    private usernameBox : Phaser.GameObjects.Graphics | undefined
-    private editNameForm : Phaser.GameObjects.DOMElement | undefined
-    private usernameText : Phaser.GameObjects.Text | undefined
 
+    // Username Box
+    private usernameBox : usernameBox | undefined
     private editNameIcon : Phaser.GameObjects.Image | undefined
 
     // Character Select
@@ -38,7 +38,6 @@ export default class SettingScene extends Phaser.Scene {
     private difficultySelectUi : difficultySelectUi | undefined
 
     // from database
-    private username : string | undefined
     private airflow : number | undefined
 
     private blackWindow : Phaser.GameObjects.Shape | undefined
@@ -54,10 +53,6 @@ export default class SettingScene extends Phaser.Scene {
 
         this.load.image('bg','assets/setting/setting_bg.png')
 
-        this.load.svg('alertGreen', 'assets/setting/logo_modal_alert_green.svg')
-        this.load.svg('alertOrange', 'assets/setting/logo_modal_alert_orange.svg')
-        this.load.svg('checked', 'assets/setting/logo_modal_checked.svg')
-        this.load.svg('cliniflo', 'assets/setting/logo_modal_cliniflo.svg')
         this.load.svg('editAirflow', 'assets/setting/logo_modal_edit airflow.svg')
         this.load.svg('editName', 'assets/setting/logo_modal_edit name.svg')
 
@@ -71,7 +66,9 @@ export default class SettingScene extends Phaser.Scene {
 
     create(){
         const { width, height } = this.scale
-        this.username = "น้องราคูนี่" // change later
+
+        const i18n = I18nSingleton.getInstance()
+        
         this.airflow = 100 // change later
         
         this.add.tileSprite(0,0,width,height,'bg').setOrigin(0).setScrollFactor(0,0)
@@ -80,34 +77,13 @@ export default class SettingScene extends Phaser.Scene {
         // Headings
         this.add.image( width/2 , MARGIN, 'sheet', "logo_heading_setting.png" ).setOrigin(0.5,0)
         this.add.image( width/2, 169, 'sheet', 'heading_setting.png' ).setOrigin(0.5,0)
-        this.headingText = this.add.text( width/2, 190 -20, 'ตั้งค่าเกม' )
+        this.headingText = i18n.createTranslatedText( this, width/2, 190 -20, 'setting_title' )
             .setFontSize(42)
             .setColor("#FFFFFF")
             .setStroke("#9E461B", 6)
             .setPadding(0,20,0,10)
             //.setLineSpacing(200)
             .setOrigin(0.5,0)
-
-        // Username Box
-        this.usernameBox = this.add.graphics()
-        this.usernameBox.fillStyle(0xFFFFFF)
-        this.usernameBox.fillRoundedRect( width/2 - 168, 320, 336, 56, 14 )
-        this.usernameBox.lineStyle(1, 0x727272)
-        this.usernameBox.strokeRoundedRect( width/2 - 168, 320, 336, 56, 14 )
-        
-        
-
-        // Edit Name Icon
-        this.editNameIcon = this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
-            .setInteractive().on('pointerdown', () => this.popUpEditName())
-            .setOrigin(1,0.5) // Guessed the coordinate
-
-        // Username Text
-        this.usernameText = this.add.text(width/2, 320+28 ,this.username)
-            .setColor("#57453B")
-            .setPadding(0,20,0,10)
-            .setFontSize(32)
-            .setOrigin(0.5,0.5)
 
         // Character Select
         this.characterSelectUi = new characterSelectUi(this)
@@ -122,13 +98,13 @@ export default class SettingScene extends Phaser.Scene {
 
         // Airflow Text
         this.add.image(216, 816, 'sheet', 'logo_setting_airflow.png').setOrigin(0,0) // Icon
-        this.airflowEditText = this.add.text( 216 + 59 + 13, 816 -13, "ปริมาณอากาศ" )
+        this.airflowEditText = i18n.createTranslatedText( this, 216 + 59 + 13, 816 -13, "airflow_volume" )
             .setFontSize(32)
             .setPadding(0,20,0,10)
             .setColor("#57453B") 
             .setOrigin(0,0)
 
-        this.medicalAdviceText = this.add.text( width/2, 872 - 20, "*ปรับตามคำแนะนำของแพทย์เท่านั้น*" )
+        this.medicalAdviceText = i18n.createTranslatedText( this, width/2, 872 - 20, "doctor_advice_airflow" )
             .setFontSize(28)
             .setPadding(0,20,0,10)
             .setColor("#D35E24")
@@ -155,7 +131,7 @@ export default class SettingScene extends Phaser.Scene {
 
         // Difficulty
         this.add.image( 216, 1024, 'sheet', 'logo_setting_difficulty.png').setOrigin(0,0)
-        this.difficultyText = this.add.text( 216+59+13, 1024 - 13, "ระดับความยาก")
+        this.difficultyText = i18n.createTranslatedText( this, 216+59+13, 1024 - 13, "difficulty_title")
             .setPadding(0,20,0,10)
             .setFontSize( 32 )
             .setColor("#57453B") 
@@ -172,28 +148,7 @@ export default class SettingScene extends Phaser.Scene {
             .setVisible(false)
 
         // Pop Up Form
-        // Edit Name
         const self = this
-        this.editNameForm = this.add.dom( 72 + 48, 345 + 48 )
-            .setOrigin(0,0)
-            .createFromCache('editnameForm')
-        let editNameDom = this.editNameForm
-        editNameDom.addListener('click')
-        editNameDom.on('click', function(event : any) {
-            if(event.target.name === 'submit') {
-                const inputUsername = this.getChildByName('namefield').value
-                if (inputUsername != ''){
-                    self.updateUsername(inputUsername)
-                }
-                self.closeEditNamePopUp()
-                editNameDom.setVisible(false)
-            }
-            if(event.target.name === 'cancel'){
-                self.closeEditNamePopUp()
-                editNameDom.setVisible(false)
-            }
-        })
-        this.editNameForm.setVisible(false)
 
         // Edit Airflow1
         this.editAirflowForm1 = this.add.dom( 72 + 48, 345 + 48 - 250 )
@@ -292,6 +247,14 @@ export default class SettingScene extends Phaser.Scene {
         })
         this.editAirflowForm5.setVisible(false)
 
+        // Edit Name Icon
+        this.editNameIcon = this.add.image(width - 192 - 20 , 320 + 28, 'sheet', "logo_setting_edit name.png")
+            //.setInteractive().on('pointerdown', () => this.popUpEditName())
+            .setOrigin(1,0.5) // Guessed the coordinate
+
+        // Username Box
+        this.usernameBox = new usernameBox(this,this.editNameIcon,"น้องบุนออเรนจ์")
+
         // Set font for all texts
         WebFont.load({
             google: {
@@ -305,7 +268,7 @@ export default class SettingScene extends Phaser.Scene {
             }
           });
 
-        this.popUpEditAirflow3()
+        // this.popUpEditAirflow3()
     }
 
     update() {
@@ -313,7 +276,7 @@ export default class SettingScene extends Phaser.Scene {
     }
 
     setAllText(style : any) : void {
-        this.usernameText?.setStyle(style)
+        // this.usernameText?.setStyle(style)
 
         this.characterSelectUi?.setFont(style)
 
@@ -326,30 +289,13 @@ export default class SettingScene extends Phaser.Scene {
         this.difficultyText?.setStyle(style)
     }
 
-    popUpEditName() : void {
-        this.setInteractiveOff()
-        this.popUpBox?.clear()
-        this.popUpBox?.setVisible(true)
-        this.popUpBox?.fillStyle(0xffffff)
-        this.popUpBox?.fillRoundedRect(72,345,576,590,48)
-        this.editNameForm?.setVisible(true)
-        this.blackWindow?.setVisible(true)
-
-        // Set default value
-        const namefieldValue = <Element>this.editNameForm?.getChildByName('namefield')
-        namefieldValue.value = this.username
-    }
+    // Don't forget to set Interactive
 
     closeEditNamePopUp() : void {
         this.blackWindow?.setVisible(false)
         this.popUpBox?.clear()
         this.popUpBox?.setVisible(false)
         this.setInteractiveOn()
-    }
-
-    updateUsername(newUsername : string) : void {
-        this.username = newUsername
-        this.usernameText?.setText(newUsername)
     }
 
     popUpEditAirflow1() : void {
@@ -459,7 +405,7 @@ export default class SettingScene extends Phaser.Scene {
         this.characterSelectUi?.setInteractiveOn()
         this.difficultySelectUi?.setInteractiveOn()
 
-        this.editNameIcon?.setInteractive().on('pointerdown', () => this.popUpEditName())
+        // this.editNameIcon?.setInteractive().on('pointerdown', () => this.popUpEditName())
         this.editAirflowIcon?.setInteractive().on('pointerdown', () => this.popUpEditAirflow1())
     }
 }

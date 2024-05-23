@@ -1,4 +1,7 @@
+import I18nSingleton from "i18n/I18nSingleton"
+
 export default class difficultySelectUi {
+
     //Difficulty
     private difficulty : number | undefined// from database
 
@@ -15,6 +18,8 @@ export default class difficultySelectUi {
     private hardText : Phaser.GameObjects.Text | undefined
 
     constructor(scene: Phaser.Scene, difficulty?: number) {
+        const i18n = I18nSingleton.getInstance()
+
         this.difficulty = difficulty === undefined ? 0 : difficulty
         const { width,height } = scene.scale
 
@@ -48,13 +53,13 @@ export default class difficultySelectUi {
             .on('pointerdown', () => this.changeDifficulty(2))
 
         // Difficulty Texts
-        this.easyText = scene.add.text( width/2 - 168, 1088 + 40, "ง่าย")
+        this.easyText = i18n.createTranslatedText( scene, width/2 - 168, 1088 + 40, "difficulty_easy")
             .setFontSize(28)
             .setOrigin(0.5,0.5)
-        this.mediumText = scene.add.text( width/2, 1088 + 40, "ปานกลาง")
+        this.mediumText = i18n.createTranslatedText( scene, width/2, 1088 + 40, "difficulty_medium")
             .setFontSize(28)
             .setOrigin(0.5,0.5)
-        this.hardText = scene.add.text( width/2 + 168, 1088 + 40, "ยาก")
+        this.hardText = i18n.createTranslatedText( scene, width/2 + 168, 1088 + 40, "difficulty_hard")
             .setFontSize(28)
             .setOrigin(0.5,0.5)
 

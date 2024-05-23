@@ -64,5 +64,10 @@
   "collect_item": "เก็บ",
   "alien_boss_name": "เอเลี่ยนซ่า",
   "alien_boss_name_version2": "เอเลี่ยนซ่า\nร่าง 2",
-  "player_name": "น้องปิ๊ด"
+  "player_name": "น้องปิ๊ด",
+  "setting_title" : "ตั้งค่าเกม",
+  "airflow_volume" : "ปริมาณอากาศ",
+  "doctor_advice_airflow" : "*ปรับตามคำแนะนำของแพทย์เท่านั้น*",
+  "use_button" : "ใช้",
+  "using_button" : "ใช้อยู่"
 }

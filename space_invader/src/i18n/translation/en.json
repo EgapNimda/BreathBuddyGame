@@ -64,5 +64,10 @@
   "collect_item": "Collect",
   "alien_boss_name": "AlienZa",
   "alien_boss_name_version2": "AlienZa\n2nd Form",
-  "player_name": "Nong Pid"
+  "player_name": "Nong Pid",
+  "setting_title" : "Setting",
+  "airflow_volume" : "Airflow Volume",
+  "doctor_advice_airflow" : "*Only change when instructed by a doctor*",
+  "use_button" : "Use",
+  "using_button" : "Using"
 }
