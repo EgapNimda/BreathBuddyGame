@@ -69,5 +69,9 @@
   "airflow_volume" : "ปริมาณอากาศ",
   "doctor_advice_airflow" : "*ปรับตามคำแนะนำของแพทย์เท่านั้น*",
   "use_button" : "ใช้",
-  "using_button" : "ใช้อยู่"
+  "using_button" : "ใช้อยู่",
+  "edit_your_name" : "แก้ไขชื่อของคุณ",
+  "cancel" : "ยกเลิก",
+  "submit" : "ยืนยัน",
+  "submit_edit" : "ยืนยันแก้ไข"
 }

@@ -1,3 +1,5 @@
+import i18next from "i18next"
+
 export default class editUsernamePopUp {
     private username : string | undefined
 
@@ -25,6 +27,16 @@ export default class editUsernamePopUp {
         this.editNameForm = scene.add.dom( 72 + 48, 345 + 48 )
             .setOrigin(0,0)
             .createFromCache('editnameForm')
+        // Set I18n text
+        const editNameText = <Element>this.editNameForm.getChildByID('edit_your_name')
+        editNameText.textContent = i18next.t('edit_your_name')
+
+        const cancelText = <Element>this.editNameForm.getChildByID('cancel')
+        cancelText.textContent = i18next.t('cancel')
+
+        const submitText = <Element>this.editNameForm.getChildByID('submit')
+        submitText.textContent = i18next.t('submit_edit')
+
         this.editNameForm.addListener('click')
         this.editNameForm.on('click', function(event : any) {
             if(event.target.name === 'submit') {

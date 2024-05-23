@@ -199,7 +199,6 @@ export default class SettingScene extends Phaser.Scene {
         this.airflowText?.setStyle(style)
     }
 
-    // Don't forget to set Interactive
     popUpEditName() : void {
         this.editUsernamePopUp!.popUpEditName()
     }
