@@ -408,10 +408,12 @@ export default class SettingScene extends Phaser.Scene {
         this.editAirflowForm4?.setVisible(true)
         this.blackWindow?.setVisible(true)
 
-        const currentAirflow = <Element>this.editAirflowForm4?.getChildByName('currentAirflow') ! as HTMLElement;
-        // currentAirflow.textContent = this.airflow === undefined ? 'xxx' : this.airflow.toString()
-        console.log(currentAirflow.textContent);
-        currentAirflow.textContent = "Bunda";
+        const currentAirflow = <Element>this.editAirflowForm4?.getChildByID('currentAirflow');
+        currentAirflow.textContent = this.airflow === undefined ? 'xxx' : this.airflow.toString()
+
+        const newAirflow = <Element>this.editAirflowForm4?.getChildByID('newAirflow');
+        newAirflow.textContent = this.airflowInput === undefined ? 'xxx' : this.airflowInput.toString()
+
     }
 
     closeEditAirflowPopUp4() : void {
@@ -428,6 +430,9 @@ export default class SettingScene extends Phaser.Scene {
         this.popUpBox?.fillRoundedRect(72, 345 - 250, 576, 590 + 500, 48) // TODO size vary, change later
         this.editAirflowForm5?.setVisible(true)
         this.blackWindow?.setVisible(true)
+
+        const changedAirflow = <Element>this.editAirflowForm5?.getChildByID('changedAirflow');
+        changedAirflow.textContent = this.airflow === undefined ? 'xxx' : this.airflow.toString()
     }
 
     closeEditAirflowPopUp5() : void {
